@@ -17,6 +17,7 @@ export default function Home() {
         const token = localStorage.getItem("token");
 
         const cartItem = {
+            data: product,
             product: product._id,
             quantity: 1,
         };
