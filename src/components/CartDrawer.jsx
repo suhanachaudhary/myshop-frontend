@@ -53,32 +53,32 @@ const CartDrawer = () => {
                             className="border border-gray-200 rounded-lg p-3 flex gap-3"
                         >
                             <img
-                                src={item.product.image || item?.data?.image}
+                                src={item?.product?.image || item?.data?.image}
                                 alt=""
                                 className="w-16 h-16 object-contain"
                             />
 
                             <div className="flex-1">
                                 <h4 className="text-sm font-medium">
-                                    {item.product.name || item?.data?.name}
+                                    {item?.product?.name || item?.data?.name}
                                 </h4>
 
                                 <p className="font-bold">
-                                    ${item.product.price * item.quantity || item.data.price * item.quantity}
+                                    ${item?.product?.price * item?.quantity || item?.data?.price * item?.quantity}
                                 </p>
 
                                 <div className="flex items-center gap-2 mt-2">
                                     <button
-                                        onClick={() => decreaseQty(item.product._id || item.data._id)}
+                                        onClick={() => decreaseQty(item?.product._id || item?.data._id)}
                                         className="border px-2"
                                     >
                                         −
                                     </button>
 
-                                    <span>{item.quantity}</span>
+                                    <span>{item?.quantity}</span>
 
                                     <button
-                                        onClick={() => increaseQty(item.product._id || item.data._id)}
+                                        onClick={() => increaseQty(item?.product._id || item?.data._id)}
                                         className="border px-2"
                                     >
                                         +
@@ -87,7 +87,7 @@ const CartDrawer = () => {
                             </div>
 
                             <button
-                                onClick={() => removeItem(item.product._id || item.data._id)}
+                                onClick={() => removeItem(item?.product._id || item?.data._id)}
                                 className="text-red-500"
                             >
                                 ✖
