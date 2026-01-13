@@ -1,5 +1,7 @@
 
 import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../store/slices/cartSlice";
 
 import {
     getAdminProducts,
@@ -11,6 +13,7 @@ import toast from "react-hot-toast";
 
 export default function ProductDetail() {
     const { id } = useParams();
+    const dispatch = useDispatch();
 
     const [product, setProduct] = useState(null);
     const [mainImg, setMainImg] = useState("");
@@ -37,40 +40,12 @@ export default function ProductDetail() {
 
 
     const handleAddToCart = async (product) => {
-        const token = localStorage.getItem("token");
-
-        const cartItem = {
-            data: product,
-            product: product._id,
-            quantity: 1,
-        };
-
-        if (!token) {
-            let localCart = JSON.parse(localStorage.getItem("cart")) || [];
-
-            const existing = localCart.find(
-                (item) => item.product === product._id
-            );
-
-            if (existing) existing.quantity += 1;
-            else localCart.push(cartItem);
-
-            localStorage.setItem("cart", JSON.stringify(localCart));
-            toast.success("Added to cart (saved locally)");
-            return;
+        try {
+            await dispatch(addToCart({ product, quantity: qty })).unwrap();
+            toast.success("Added to cart! 🛒");
+        } catch (error) {
+            toast.error("Failed to add to cart");
         }
-
-        await axios.post(
-            "http://localhost:3000/api/cart/add",
-            cartItem,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-
-        toast.success("Added to cart");
     };
 
 

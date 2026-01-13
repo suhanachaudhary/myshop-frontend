@@ -1,7 +1,9 @@
-
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchCart } from "./store/slices/cartSlice";
 
-import Navbar from "./components/Navbar"
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -26,6 +28,12 @@ import CartDrawer from "./components/CartDrawer";
 import Checkout1 from "./pages/Checkout1";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Initialize cart on app load
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   return (
     <Router>
@@ -79,13 +87,10 @@ function App() {
             </AdminRoute>
           }
         />
-
-
-
       </Routes>
       <Footer />
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

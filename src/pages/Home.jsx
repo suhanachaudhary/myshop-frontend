@@ -4,51 +4,13 @@ import {
 } from "../api/adminProductApi";
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
-import toast from "react-hot-toast";
+import { ProductCard, Button, Container } from "../components/ui";
 
 
 export default function Home() {
 
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
-
-    const handleAddToCart = async (product) => {
-        const token = localStorage.getItem("token");
-
-        const cartItem = {
-            data: product,
-            product: product._id,
-            quantity: 1,
-        };
-
-        if (!token) {
-            let localCart = JSON.parse(localStorage.getItem("cart")) || [];
-
-            const existing = localCart.find(
-                (item) => item.product === product._id
-            );
-
-            if (existing) existing.quantity += 1;
-            else localCart.push(cartItem);
-
-            localStorage.setItem("cart", JSON.stringify(localCart));
-            toast.success("Added to cart (saved locally)");
-            return;
-        }
-
-        await axios.post(
-            "https://myshop-backend-cdz8.onrender.com/api/cart/add",
-            cartItem,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-
-        toast.success("Added to cart");
-    };
 
 
 
@@ -90,12 +52,12 @@ export default function Home() {
                     </div>
 
                     <div className="mt-6 flex flex-wrap gap-4">
-                        <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700">
+                        <Button variant="primary" size="lg">
                             Browse Buying Guides
-                        </button>
-                        <button className="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50">
+                        </Button>
+                        <Button variant="outline" size="lg" onClick={() => navigate("/shop")}>
                             Shop Printers
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -124,9 +86,13 @@ export default function Home() {
                         <li>✔ Upgrades</li>
                     </ul>
                     <div className="mt-6 flex gap-3">
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-[16px] w-full">Read Guide</button>
+                        <Button variant="primary" size="md" className="w-full">
+                            Read Guide
+                        </Button>
 
-                        <button className="border border-blue-600 w-full text-blue-600 px-4 py-2 rounded-lg text-[16px]">Shop Now</button>
+                        <Button variant="outline" size="md" className="w-full" onClick={() => navigate("/shop")}>
+                            Shop Now
+                        </Button>
                     </div>
                 </div>
             </section>
@@ -773,12 +739,12 @@ export default function Home() {
 
                     {/* CTA buttons */}
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <button className="bg-[#0284C7] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#0369A1] transition">
+                        <Button variant="primary" size="lg">
                             Start with Our Buying Guide
-                        </button>
-                        <button className="border border-[#0284C7] text-[#0284C7] px-6 py-3 rounded-xl font-medium hover:bg-[#E0F2FE] transition">
+                        </Button>
+                        <Button variant="outline" size="lg" onClick={() => navigate("/shop")}>
                             Browse Our Printer Selection
-                        </button>
+                        </Button>
                     </div>
 
                 </div>
@@ -807,62 +773,75 @@ export default function Home() {
 
                     <div className="grid md:grid-cols-3 gap-6 mb-12">
 
-                        {products.slice(0, 3).map((product) => {
+                        {products.slice(0, 3).map((product, index) => {
+                            const discount = product.discount || 0;
+                            const hasDiscount = discount > 0;
 
-                            const oldPrice = product.discount
-                                ? Math.round(product.price / (1 - product.discount / 100))
+                            const oldPrice = hasDiscount
+                                ? Math.round(product.price / (1 - discount / 100))
                                 : product.price;
 
                             return (
                                 <div
                                     key={product._id}
-                                    className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-6 text-center"
+                                    className="group bg-white rounded-2xl shadow-lg border-2 border-gray-200 p-6 text-center hover:shadow-2xl hover:border-blue-300 transition-all duration-300 animate-slideInUp"
+                                    style={{ animationDelay: `${index * 100}ms` }}
                                 >
-                                    <span className="inline-block text-xs font-semibold text-white bg-[#EF4444] px-3 py-1 rounded-full mb-4">
-                                        SALE
-                                    </span>
+                                    {hasDiscount ? (
+                                        <span className="inline-block text-xs font-bold text-white bg-gradient-to-r from-red-500 to-red-600 px-3 py-1.5 rounded-full mb-4 shadow-md">
+                                            {discount}% OFF
+                                        </span>
+                                    ) : (
+                                        <span className="inline-block text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 px-3 py-1.5 rounded-full mb-4 shadow-md">
+                                            NEW
+                                        </span>
+                                    )}
 
                                     <Link
                                         to={`/product/${product._id}`}
-                                        className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden hover:shadow-lg transition block"
+                                        className="block bg-gradient-to-br from-gray-50 to-white group-hover:from-blue-50 group-hover:to-blue-100 rounded-xl p-4 transition-all duration-300"
                                     >
                                         <img
                                             src={product.image}
                                             alt={product.name}
-                                            className="mx-auto h-40 object-contain mb-4"
+                                            className="mx-auto h-40 object-contain mb-4 group-hover:scale-110 transition-transform duration-300"
                                         />
                                     </Link>
 
-                                    <div className="flex justify-center text-yellow-400 mb-2 text-xl">
+                                    <div className="flex justify-center text-yellow-400 mb-3 text-xl">
                                         ★★★★★
                                     </div>
 
-                                    <h3 className="font-semibold text-[#0F172A] mb-2">
+                                    <h3 className="font-bold text-[#0F172A] mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                         {product.name}
                                     </h3>
 
-                                    <p className="text-xl font-bold text-[#0F172A] mb-1">
-                                        ${product.price}
-                                    </p>
+                                    <div className="mb-3">
+                                        <p className="text-2xl font-bold text-blue-600 mb-1">
+                                            ${product.price.toFixed(2)}
+                                        </p>
 
-                                    <p className="text-sm text-[#64748B] line-through mb-3">
-                                        ${oldPrice}
-                                    </p>
+                                        {hasDiscount && (
+                                            <p className="text-sm text-[#64748B] line-through">
+                                                ${oldPrice.toFixed(2)}
+                                            </p>
+                                        )}
+                                    </div>
 
                                     <span
-                                        className={`inline-block text-xs font-medium px-3 py-1 rounded-full mb-4 ${product.stock > 0
+                                        className={`inline-block text-xs font-semibold px-3 py-1.5 rounded-full mb-4 ${product.stock > 0
                                             ? "text-green-600 bg-green-100"
                                             : "text-red-600 bg-red-100"
                                             }`}
                                     >
-                                        {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                                        {product.stock > 0 ? "✓ In Stock" : "✗ Out of Stock"}
                                     </span>
 
                                     <button
                                         onClick={() => handleAddToCart(product)}
-                                        className="w-full bg-[#0284C7] text-white py-3 rounded-xl font-medium hover:bg-[#0369A1] transition"
+                                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
                                     >
-                                        Add to Cart
+                                        🛒 Add to Cart
                                     </button>
                                 </div>
                             )
@@ -871,9 +850,9 @@ export default function Home() {
 
                     {/* View All */}
                     <div className="flex justify-center">
-                        <button className="flex items-center gap-2 bg-[#0284C7] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#0369A1] transition" onClick={() => navigate("/shop")}>
+                        <Button variant="primary" size="lg" onClick={() => navigate("/shop")}>
                             View All Products →
-                        </button>
+                        </Button>
                     </div>
 
                 </div>
@@ -968,7 +947,7 @@ export default function Home() {
                                 Starting from $189
                             </p>
 
-                            <button className="w-full border border-[#CBD5E1] text-[#0F172A] py-2.5 rounded-lg font-medium hover:bg-[#F1F5F9] transition flex items-center justify-center gap-2" onClick={() => navigate("/shop")}>
+                            <button className="w-full border-2 border-gray-300 hover:border-blue-500 text-[#0F172A] py-2.5 rounded-xl font-semibold hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 flex items-center justify-center gap-2" onClick={() => navigate("/shop")}>
                                 View Models →
                             </button>
                         </div>
@@ -991,7 +970,7 @@ export default function Home() {
                                 Starting from $399
                             </p>
 
-                            <button className="w-full border border-[#CBD5E1] text-[#0F172A] py-2.5 rounded-lg font-medium hover:bg-[#F1F5F9] transition flex items-center justify-center gap-2" onClick={() => navigate("/shop")}>
+                            <button className="w-full border-2 border-gray-300 hover:border-blue-500 text-[#0F172A] py-2.5 rounded-xl font-semibold hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 flex items-center justify-center gap-2" onClick={() => navigate("/shop")}>
                                 View Models →
                             </button>
                         </div>
@@ -1014,7 +993,7 @@ export default function Home() {
                                 Starting from $139
                             </p>
 
-                            <button className="w-full border border-[#CBD5E1] text-[#0F172A] py-2.5 rounded-lg font-medium hover:bg-[#F1F5F9] transition flex items-center justify-center gap-2" onClick={() => navigate("/shop")}>
+                            <button className="w-full border-2 border-gray-300 hover:border-blue-500 text-[#0F172A] py-2.5 rounded-xl font-semibold hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 flex items-center justify-center gap-2" onClick={() => navigate("/shop")}>
                                 View Models →
                             </button>
                         </div>
@@ -1200,9 +1179,14 @@ export default function Home() {
                     </p>
 
                     <div className="flex justify-center mb-10">
-                        <button className="flex items-center gap-3 bg-white text-[#0F172A] px-8 py-4 rounded-xl font-semibold hover:bg-slate-100 transition shadow-lg">
+                        <Button 
+                            variant="primary" 
+                            size="lg" 
+                            onClick={() => navigate("/shop")}
+                            className="bg-white hover:bg-gray-50 text-[#0F172A] hover:text-[#0F172A] shadow-2xl"
+                        >
                             🛒 Shop Printers Now
-                        </button>
+                        </Button>
                     </div>
 
                     <div className="flex flex-col sm:flex-row justify-center gap-8 text-sm text-slate-200">
