@@ -16,7 +16,7 @@ const Login = () => {
             if (!token || !localCart || localCart.length === 0) return;
 
             await axios.post(
-                "http://localhost:3000/api/cart/merge",
+                "https://myshop-backend-cdz8.onrender.com/api/cart/merge",
                 { cartItems: localCart },
                 {
                     headers: {

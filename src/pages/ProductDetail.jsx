@@ -23,7 +23,7 @@ export default function ProductDetail() {
     const fetchSingleProduct = async () => {
         try {
             const res = await axios.get(
-                `http://localhost:3000/api/admin/products/${id}`
+                `https://myshop-backend-cdz8.onrender.com/api/admin/products/${id}`
             );
 
             console.log("siin.", res.data)

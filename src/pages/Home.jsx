@@ -37,7 +37,7 @@ export default function Home() {
         }
 
         await axios.post(
-            "http://localhost:3000/api/cart/add",
+            "https://myshop-backend-cdz8.onrender.com/api/cart/add",
             cartItem,
             {
                 headers: {

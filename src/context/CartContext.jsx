@@ -30,7 +30,7 @@ export const CartProvider = ({ children }) => {
 
     const fetchDBCart = async () => {
         const res = await axios.get(
-            "http://localhost:3000/api/cart",
+            "https://myshop-backend-cdz8.onrender.com/api/cart",
             { headers: { Authorization: `Bearer ${token}` } }
         );
         setCartItems(res.data.cart);
@@ -54,7 +54,7 @@ export const CartProvider = ({ children }) => {
         }
 
         await axios.put(
-            "http://localhost:3000/api/cart/update",
+            "https://myshop-backend-cdz8.onrender.com/api/cart/update",
             { productId: id, delta },
             { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -69,7 +69,7 @@ export const CartProvider = ({ children }) => {
         }
 
         await axios.delete(
-            `http://localhost:3000/api/cart/remove/${id}`,
+            `https://myshop-backend-cdz8.onrender.com/api/cart/remove/${id}`,
             { headers: { Authorization: `Bearer ${token}` } }
         );
 

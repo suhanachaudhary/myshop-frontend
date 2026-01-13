@@ -45,7 +45,7 @@ const AddProduct = () => {
             formData.append("image", product.image);
 
             await axios.post(
-                "http://localhost:3000/api/admin/add-product",
+                "https://myshop-backend-cdz8.onrender.com/api/admin/add-product",
                 formData,
                 {
                     headers: {
