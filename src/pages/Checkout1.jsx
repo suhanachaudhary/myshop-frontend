@@ -1,11 +1,15 @@
 
 import { useLocation } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useState } from "react";
+import { useSelector } from "react-redux";
+
+import {
+    selectCartItems
+} from "../store/slices/cartSlice";
 
 export default function Checkout1() {
     const location = useLocation();
-    const { cartItems } = useCart();
+
+    const cartItems = useSelector(selectCartItems);
 
     const isBuyNow = location.state?.type === "buynow";
     const buyNowProduct = location.state?.product;

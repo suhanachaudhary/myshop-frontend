@@ -5,14 +5,15 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ProductCard, Button, Container } from "../components/ui";
-
+import { useDispatch } from 'react-redux';
+import { addToCart } from "../store/slices/cartSlice";
+import toast from "react-hot-toast";
 
 export default function Home() {
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
-
-
 
     const fetchProducts = async () => {
         const res = await getAdminProducts();
@@ -22,6 +23,17 @@ export default function Home() {
     useEffect(() => {
         fetchProducts();
     }, []);
+
+
+    const handleAddToCart = async (e) => {
+        e.preventDefault();
+        try {
+            await dispatch(addToCart({ products, quantity: 1 })).unwrap();
+            toast.success('Added to cart! 🛒');
+        } catch (error) {
+            toast.error('Failed to add to cart');
+        }
+    };
 
 
     return (
@@ -773,79 +785,11 @@ export default function Home() {
 
                     <div className="grid md:grid-cols-3 gap-6 mb-12">
 
-                        {products.slice(0, 3).map((product, index) => {
-                            const discount = product.discount || 0;
-                            const hasDiscount = discount > 0;
+                        {products.slice(0, 3).map((product) => (
+                            <ProductCard key={product._id} product={product} />
+                        ))}
 
-                            const oldPrice = hasDiscount
-                                ? Math.round(product.price / (1 - discount / 100))
-                                : product.price;
 
-                            return (
-                                <div
-                                    key={product._id}
-                                    className="group bg-white rounded-2xl shadow-lg border-2 border-gray-200 p-6 text-center hover:shadow-2xl hover:border-blue-300 transition-all duration-300 animate-slideInUp"
-                                    style={{ animationDelay: `${index * 100}ms` }}
-                                >
-                                    {hasDiscount ? (
-                                        <span className="inline-block text-xs font-bold text-white bg-gradient-to-r from-red-500 to-red-600 px-3 py-1.5 rounded-full mb-4 shadow-md">
-                                            {discount}% OFF
-                                        </span>
-                                    ) : (
-                                        <span className="inline-block text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 px-3 py-1.5 rounded-full mb-4 shadow-md">
-                                            NEW
-                                        </span>
-                                    )}
-
-                                    <Link
-                                        to={`/product/${product._id}`}
-                                        className="block bg-gradient-to-br from-gray-50 to-white group-hover:from-blue-50 group-hover:to-blue-100 rounded-xl p-4 transition-all duration-300"
-                                    >
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            className="mx-auto h-40 object-contain mb-4 group-hover:scale-110 transition-transform duration-300"
-                                        />
-                                    </Link>
-
-                                    <div className="flex justify-center text-yellow-400 mb-3 text-xl">
-                                        ★★★★★
-                                    </div>
-
-                                    <h3 className="font-bold text-[#0F172A] mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                                        {product.name}
-                                    </h3>
-
-                                    <div className="mb-3">
-                                        <p className="text-2xl font-bold text-blue-600 mb-1">
-                                            ${product.price.toFixed(2)}
-                                        </p>
-
-                                        {hasDiscount && (
-                                            <p className="text-sm text-[#64748B] line-through">
-                                                ${oldPrice.toFixed(2)}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <span
-                                        className={`inline-block text-xs font-semibold px-3 py-1.5 rounded-full mb-4 ${product.stock > 0
-                                            ? "text-green-600 bg-green-100"
-                                            : "text-red-600 bg-red-100"
-                                            }`}
-                                    >
-                                        {product.stock > 0 ? "✓ In Stock" : "✗ Out of Stock"}
-                                    </span>
-
-                                    <button
-                                        onClick={() => handleAddToCart(product)}
-                                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2"
-                                    >
-                                        🛒 Add to Cart
-                                    </button>
-                                </div>
-                            )
-                        })}
                     </div>
 
                     {/* View All */}
@@ -1179,9 +1123,9 @@ export default function Home() {
                     </p>
 
                     <div className="flex justify-center mb-10">
-                        <Button 
-                            variant="primary" 
-                            size="lg" 
+                        <Button
+                            variant="primary"
+                            size="lg"
                             onClick={() => navigate("/shop")}
                             className="bg-white hover:bg-gray-50 text-[#0F172A] hover:text-[#0F172A] shadow-2xl"
                         >
